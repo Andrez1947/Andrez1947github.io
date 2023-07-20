@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz de películas de Marvel</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css">
+  <style>
+    /* Estilos personalizados */
+    body {
+      background-color: #f0f0f0;
+      padding: 20px;
+      align-items: center;
+      text-align: center;
+    }
+
+    .quiz-container {
+      max-width: 50%;
+      margin: 10;
+      border: #575757;
+      border: solid 1px #575757;
+    }
+
+    .question {
+      margin-bottom: 10px;
+      margin-top: 30px; 
+    }
+
+    .options input[type="radio"] {
+      margin-right: 5px;
+    }
+
+    .btn-submit {
+      background-color: #ffb6b6;
+      border-color: #ffb6b6;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      color: #575757;
+    }
+    .navbar {
+      background-color: #393636;
+      border-radius: 0;
+      justify-content: center; /* Centrar elementos horizontalmente */
+    }
+
+    .navbar .nav-item {
+      flex: 1; 
+      text-align: center; 
+    }
+   
+    .navbar .nav-link {
+      color: #f4f0f0;
+      font-size: 18px;
+      font-weight: bold;
+      padding: 15px 25px;
+    }
+
+    .navbar .nav-link:hover,
+    .navbar .nav-link:focus {
+      color: #fff;
+      background-color: #ff8f8f;
+    }
+    .correct {
+      color: green;
+      font-weight: bold;
+    }
+
+    .incorrect {
+      color: red;
+      font-weight: bold;
+    }
+    /* Estilos para los radio buttons más grandes */
+    .options input[type="radio"] {
+      transform: scale(1.5); /* Hacemos los radio buttons un 50% más grandes */
+      margin-right: 10px;
+    }
+
+    /* Estilos para el texto de las opciones */
+    .options label {
+      font-size: 18px; /* Ajustamos el tamaño del texto */
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <ul class="navbar-nav w-100 d-flex justify-content-center"> <!-- w-100 para ocupar todo el ancho -->
+        <li class="nav-item">
+          <a class="nav-link" href="#">Reading</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://app.speakandimprove.com/flow/LSKSE001/1" target="_blank">Speaking</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://www.esl-lab.com/intermediate/" target="_blank">Listening</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://test-english.com/writing/b1/" target="_blank">Writing</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://chat.openai.com/?model=text-davinci-002-render-sha" target="_blank">Aprende</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <h1>English test by Mi Negrita</h1>
+  <div id="quiz-container"></div>
+  <script src="questions.js"></script>
+  <script>
+    // Función para mostrar el cuestionario
+    function showQuiz() {
+      const quizContainer = document.getElementById('quiz-container');
+
+      // Reiniciamos el contenido del contenedor
+      quizContainer.innerHTML = '';
+
+      // Creamos las preguntas y opciones
+      questions.forEach((questionObj, index) => {
+        const { question, options } = questionObj;
+
+        const questionElement = document.createElement('div');
+        questionElement.innerHTML = `<p><strong>Pregunta ${index + 1}: ${question}</strong></p>`;
+
+        options.forEach((option, optionIndex) => {
+          const optionElement = document.createElement('div');
+          optionElement.innerHTML = `
+            <input type="radio" name="question${index}" value="${optionIndex}">
+            <label>${option}</label><br>
+          `;
+          questionElement.appendChild(optionElement);
+        });
+
+        quizContainer.appendChild(questionElement);
+      });
+
+      // Agregamos el botón de enviar respuestas
+      const submitButton = document.createElement('button');
+      submitButton.textContent = 'Enviar respuestas';
+      submitButton.addEventListener('click', calculateScore);
+      quizContainer.appendChild(submitButton);
+    }
+
+    // Función para calcular el puntaje y mostrar los resultados
+    function calculateScore() {
+      let score = 0;
+      let userAnswers = [];
+
+      questions.forEach((questionObj, index) => {
+        const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+
+        if (selectedOption) {
+          const userAnswer = parseInt(selectedOption.value);
+          userAnswers.push(userAnswer);
+
+          if (userAnswer === questionObj.correctAnswer) {
+            score++;
+          }
+        }
+      });
+
+      const quizContainer = document.getElementById('quiz-container');
+      const resultElement = document.createElement('p');
+      resultElement.textContent = `Tu puntaje final es: ${score}/${questions.length}`;
+      quizContainer.appendChild(resultElement);
+
+      // Mostrar respuestas correctas e incorrectas
+      questions.forEach((questionObj, index) => {
+        const selectedOption = userAnswers[index];
+
+        const questionElement = quizContainer.children[index];
+        const options = questionElement.querySelectorAll('input');
+
+        options.forEach((option, optionIndex) => {
+          if (optionIndex === questionObj.correctAnswer) {
+            options[optionIndex].nextElementSibling.classList.add('correct');
+          } else {
+            options[optionIndex].nextElementSibling.classList.add('incorrect');
+          }
+
+          if (optionIndex === selectedOption) {
+            options[optionIndex].checked = true;
+          }
+        });
+      });
+    }
+
+    // Mostramos el cuestionario al cargar la página
+    showQuiz();
+  </script>
+</body>
+</html>
